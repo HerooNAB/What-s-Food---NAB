@@ -1,4 +1,4 @@
-const SERVER_NAME = "172.16.2.104";
+const SERVER_NAME = "172.16.1.82";
 const URL_SIGNUP = "http://$SERVER_NAME:3000/signup";
 const URL_LOGIN = "http://$SERVER_NAME:3000/signin";
 const URL_PROFILE = "http://$SERVER_NAME:3000/user/me";

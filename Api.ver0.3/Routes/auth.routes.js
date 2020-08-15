@@ -6,15 +6,10 @@ const jwt = require('jsonwebtoken');
 const RequireLogin = require('../middleware/RequireLogin')
 require('dotenv').config()
 
-
-
-
-router.get('/', (req, res) => {
-    res.send("My API");
-})
+router.get('/', (req, res) => {res.send("My API");}) //req = request (đẩy lên DB) -- res = response (lấy dữ liệu về từ DB)
 
 router.post('/signup', (req, res) => {
-    const { name, email, password, avatar, phone } = req.body
+    const { name, email, password, avatar, phone } = req.body 
     if (!email || !password || !name) {
         return res.status(422).json({ error: "Chưa điền đầy đủ thông tin!" })
     }
@@ -74,7 +69,7 @@ router.post('/signin', (req, res) => {
         })
 })
 
-router.post('/user/me/logout', RequireLogin, async(req, res) => {
+router.post('/user/me/logout', RequireLogin, async (req, res) => {
 
     try {
         req.user.tokens = req.user.tokens.filter((token) => {

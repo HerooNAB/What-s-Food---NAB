@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import 'package:what_food/Models/UserModel.dart';
 import 'package:what_food/Models/post.dart';
-
 import 'package:what_food/Services/AuthService.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -170,33 +168,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   } */
 
-  _buildToggleButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.grid_on),
-          iconSize: 30.0,
-          color: _displayPosts == 0
-              ? Theme.of(context).primaryColor
-              : Colors.grey[300],
-          onPressed: () => setState(() {
-            _displayPosts = 0;
-          }),
-        ),
-        IconButton(
-          icon: Icon(Icons.list),
-          iconSize: 30.0,
-          color: _displayPosts == 1
-              ? Theme.of(context).primaryColor
-              : Colors.grey[300],
-          onPressed: () => setState(() {
-            _displayPosts = 1;
-          }),
-        ),
-      ],
-    );
-  }
+  // _buildToggleButtons() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //     children: <Widget>[
+  //       IconButton(
+  //         icon: Icon(Icons.grid_on),
+  //         iconSize: 30.0,
+  //         color: _displayPosts == 0
+  //             ? Theme.of(context).primaryColor
+  //             : Colors.grey[300],
+  //         onPressed: () => setState(() {
+  //           _displayPosts = 0;
+  //         }),
+  //       ),
+  //       IconButton(
+  //         icon: Icon(Icons.list),
+  //         iconSize: 30.0,
+  //         color: _displayPosts == 1
+  //             ? Theme.of(context).primaryColor
+  //             : Colors.grey[300],
+  //         onPressed: () => setState(() {
+  //           _displayPosts = 1;
+  //         }),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   /* _buildTilePost(Post post) {
     return GridTile(
@@ -368,7 +366,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             );
-            //return Text(snapshot.data.name);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }

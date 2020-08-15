@@ -81,22 +81,15 @@ class AuthService {
     }
   }
 
-  static Future<User> upDateProfileUser(
-      name, password, email, bio, avatar) async {
+  static Future<User> upDateProfileUser(name, email, bio, avatar) async {
     final prefs = await SharedPreferences.getInstance();
     final keyToken = 'token';
     final token = prefs.get(keyToken) ?? 0;
 
     String apiUrl = '$URL_UPDATEPROFILE';
-    http.Response response = await http.post(apiUrl, body: {
-      'name': name,
-      'password': password,
-      'email': email,
-      'bio': bio,
-      'avatar': avatar
-    }, headers: {
-      'Authorization': 'Bearer $token'
-    });
+    http.Response response = await http.put(apiUrl,
+        body: {'name': name, 'email': email, 'bio': bio, 'avatar': avatar},
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode == 200) {
       print("Result: ${response.body}");
       print('Up Date Thành Công');

@@ -6,11 +6,7 @@ const jwt = require('jsonwebtoken');
 const RequireLogin = require('../middleware/RequireLogin')
 require('dotenv').config()
 
-
-
-router.get('/user/me', RequireLogin, (req, res) => {
-    res.send(req.user)
-})
+router.get('/user/me', RequireLogin, (req, res) => {res.send(req.user)})
 
 router.get('/user/:id', RequireLogin, (req, res) => {
     User.findOne({ _id: req.params.id })
@@ -45,6 +41,7 @@ router.put('/user/me/update', RequireLogin, (req, res) => {
 })
 
 
+//đổi mật khẩu
 
 
 

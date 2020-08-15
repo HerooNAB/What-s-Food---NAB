@@ -7,12 +7,12 @@ require('dotenv').config()
 
 
 router.post('/createpost', RequireLogin, (req, res) => {
-    const { title, body } = req.body
-    if (!title || !body) {
+    const { title, body,  photo} = req.body
+    if (!title || !body || !photo) {
         return res.status(422).json({ error: "Hãy điền đầy đủ thông tin" })
     }
-    req.user.password = undefined
     const post = new Post({
+        photo,
         title,
         body,
         postedBy: req.user
