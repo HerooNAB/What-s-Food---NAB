@@ -115,6 +115,7 @@ router.delete('/deletepost/:postId', RequireLogin, (req, res) => {
         })
 })
 
+//add nghia
 router.put('/like',RequireLogin, (req, res) =>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.user._id}
