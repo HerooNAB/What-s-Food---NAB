@@ -4,17 +4,20 @@ const mongoose = require('mongoose')
 const RequireLogin = require('../middleware/RequireLogin')
 const Post = require('../models/Post.model');
 require('dotenv').config()
+var { cloudinary } = require('../utils/cloudinary.js');
+var multer  = require('multer')
+var fs = require('fs');
 
+const storage = multer.diskStorage({})
 
-router.post('/createpost', RequireLogin, (req, res) => {
-    const { title, body,  photo} = req.body
-    if (!title || !body || !photo) {
+router.post('/createpost',RequireLogin, (req, res) => {
+    const {caption, image} = req.body
+    if (!caption || !image) {
         return res.status(422).json({ error: "Hãy điền đầy đủ thông tin" })
     }
     const post = new Post({
-        photo,
-        title,
-        body,
+        image,
+        caption,
         postedBy: req.user
     })
     post.save().then(result => {
@@ -24,6 +27,8 @@ router.post('/createpost', RequireLogin, (req, res) => {
             console.log(err)
         })
 })
+
+
 
 router.get('/allpost', RequireLogin, (req, res) => {
     Post.find()

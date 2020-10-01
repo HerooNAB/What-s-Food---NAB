@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({ //định nghĩa table temp chưa lưu 
         type: String,
         required: true,
         unique: true,   // == kiểm tra không trùng = true, trùng = false
-        /*kiểm tra đúng kiểu SDTSDT*/
+        /*kiểm tra đúng kiểu SDT*/
         validate: {
             validator: function(number) {
                 return /(03|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(number);

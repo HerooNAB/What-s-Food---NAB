@@ -19,6 +19,24 @@ router.get('/user/:id', RequireLogin, (req, res) => {
 })
 
 
+router.put('/user/me/update/avatar', RequireLogin, (req, res) => {
+    User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: 
+            { 
+            avatar: req.body.avatar,
+            } 
+        },
+        { new: true },
+        (err, result) => {
+            if (err) {
+                return res.status(422).json({ error: "Không thể Edit" })
+            }
+            res.json(result)
+        })
+})
+
 router.put('/user/me/update', RequireLogin, (req, res) => {
     User.findByIdAndUpdate(
         req.user._id,

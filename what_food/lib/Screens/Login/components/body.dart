@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:what_food/Screens/EditProfile/edit_profile_screen.dart';
 import 'package:what_food/Screens/Login/components/background.dart';
+import 'package:what_food/Screens/Profile/profile_screen.dart';
 
 import 'package:what_food/Screens/Signup/signup_screen.dart';
 import 'package:what_food/Services/AuthService.dart';
@@ -8,7 +10,6 @@ import 'package:what_food/components/already_have_an_account_acheck.dart';
 import 'package:what_food/components/rounded_button.dart';
 import 'package:what_food/components/rounded_input_field.dart';
 import 'package:what_food/components/rounded_password_field.dart';
-import 'package:what_food/test123.dart';
 
 class Body extends StatelessWidget {
   String _phone, _password;

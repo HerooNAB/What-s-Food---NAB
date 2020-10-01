@@ -17,10 +17,8 @@ class AuthService {
     if (response.statusCode == 200) {
       print("Result: ${response.body}");
       print('danh ky thanh cong');
-      return "1";
     } else {
       print('dang ky that bai');
-      return "0";
     }
   }
 
