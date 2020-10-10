@@ -91,7 +91,7 @@ class AuthService {
     if (response.statusCode == 200) {
       print("Result: ${response.body}");
       print('Up Date Thành Công');
-      return json.decode(response.body);
+      return null;
     } else {
       print('Up Date Thất Bại');
       return null;

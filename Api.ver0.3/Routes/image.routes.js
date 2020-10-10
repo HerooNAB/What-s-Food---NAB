@@ -3,13 +3,15 @@ var express = require('express')
 var multer  = require('multer')
 const router = express.Router()
 var fs = require('fs');
+const RequireLogin = require('../middleware/RequireLogin')
+require('dotenv').config()
 
 var app = express()
 
 const storage = multer.diskStorage({})
 
 // This route will upload file to cloudinary
-router.post('/uploadimage', async (req, res, next) => {
+router.post('/uploadimage',RequireLogin, async (req, res, next) => {
     const upload = multer({ storage }).single('image')
     upload(req, res, function (err) {
         if (err) {

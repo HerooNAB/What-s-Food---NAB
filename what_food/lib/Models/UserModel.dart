@@ -5,9 +5,10 @@ class User {
   String password;
   String name;
   String avatar;
+  String bio;
 //Constructor
   User(
-      {this.id, this.email, this.phone, this.name, this.password, this.avatar});
+      {this.id, this.email, this.phone, this.name, this.password, this.avatar, this.bio});
 //Create Static Method
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -16,6 +17,8 @@ class User {
         phone: json["phone"],
         name: json["name"],
         password: json["password"],
-        avatar: json["avatar"]);
+        avatar: json["avatar"],
+        bio: json["bio"]
+    );
   }
 }

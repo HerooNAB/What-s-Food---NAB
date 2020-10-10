@@ -53,7 +53,7 @@ router.get('/mypost', RequireLogin, (req, res) => {
             console.log(err)
         })
 })
-router.put('/like',requireLogin,(req,res)=>{
+router.put('/like',RequireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.user._id}
     },{
@@ -68,7 +68,7 @@ router.put('/like',requireLogin,(req,res)=>{
 })
 
 
-router.put('/unlike',requireLogin,(req,res)=>{
+router.put('/unlike',RequireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $pull:{likes:req.user._id}
     },{
@@ -82,7 +82,7 @@ router.put('/unlike',requireLogin,(req,res)=>{
     })
 })
 
-router.put('/comment',requireLogin,(req,res)=>{
+router.put('/comment',RequireLogin,(req,res)=>{
     const comment = {
         text:req.body.text,
         postedBy:req.user._id
