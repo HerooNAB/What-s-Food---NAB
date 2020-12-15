@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema({ //định nghĩa table temp chưa lưu 
 
     bio: {
         type: String,
+        default: ''
     },
     /*định nghĩa token*/
     /*[] - định nghĩa kiểu mảng (trong 1 user có nhiều token)*/

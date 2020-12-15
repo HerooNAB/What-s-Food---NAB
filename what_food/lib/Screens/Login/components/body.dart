@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:what_food/Camera%20Detected/home.dart';
+import 'package:what_food/Camera%20Detected/main.dart';
 import 'package:what_food/Screens/EditProfile/edit_profile_screen.dart';
 import 'package:what_food/Screens/Login/components/background.dart';
-
 
 import 'package:what_food/Screens/Signup/signup_screen.dart';
 import 'package:what_food/Services/AuthService.dart';
@@ -16,7 +18,6 @@ import '../../../KhangProfile.dart';
 
 class Body extends StatelessWidget {
   String _phone, _password;
-
   @override
   Widget build(BuildContext context) {
     _submit() {
@@ -25,7 +26,7 @@ class Body extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return ProfileFirst();
+            return TestAi();
           },
         ),
       );
