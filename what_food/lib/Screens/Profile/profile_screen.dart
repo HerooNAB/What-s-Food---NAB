@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:what_food/Models/UserModel.dart';
-import 'package:what_food/Models/post.dart';
+import 'package:what_food/Screens/Login/login_screen.dart';
 import 'package:what_food/Services/AuthService.dart';
+import 'package:what_food/constants.dart';
+import 'package:what_food/Screens/EditProfile/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String currentUserId;
@@ -15,364 +17,405 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  //bool _isFollowing = false;
-  int _followerCount = 0;
-  int _followingCount = 0;
-  int _displayPosts = 0; // 0 - grid, 1 - column
-  //User _profileUser;
-  List<Post> _posts = [];
-
   Future<User> futureUser;
-
   @override
   void initState() {
+    futureUser = AuthService.profile_Author;
     super.initState();
-    futureUser = AuthService.profile_Author();
-    //_setupProfileUser();
   }
 
-  /* _setupProfileUser() async {
-    User profileUser = await AuthService.getUserWithId(widget.userId);
-    setState(() {
-      _profileUser = profileUser;
-    });
-  } */
+  _navigatorToEditScreen() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return EditProfileScreen();
+    }));
+  }
 
-  /* _displayButton(User user) {
-    return user.id == Provider.of<UserData>(context).currentUserId
-        ? Container(
-            width: 200.0,
-            child: FlatButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => EditProfileScreen(
-                    user: user,
-                  ),
-                ),
-              ),
-              color: Colors.blue,
-              textColor: Colors.white,
-              child: Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
-          )
-        : Container(
-            width: 200.0,
-            child: FlatButton(
-              onPressed: () => {print('nút này là để flollow')},
-              color: _isFollowing ? Colors.grey[200] : Colors.blue,
-              textColor: _isFollowing ? Colors.black : Colors.white,
-              child: Text(
-                _isFollowing ? 'Unfollow' : 'Follow',
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
-          );
-  } */
+  _logoutApp() {
+    AuthService.logout_Author_Dio();
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LoginScreen();
+    }));
+  }
 
-  /* _buildProfileInfo(User user) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0.0),
-          child: Row(
-            children: <Widget>[
-              CircleAvatar(
-                radius: 50.0,
-                backgroundColor: Colors.grey,
-                backgroundImage: user.avatar.isEmpty
-                    ? AssetImage('assets/images/Avatardefault.jpg')
-                    : CachedNetworkImageProvider(user.avatar),
-              ),
-              Expanded(
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              _posts.length.toString(),
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              'Posts',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              _followerCount.toString(),
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              'Followers',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              _followingCount.toString(),
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              'Following',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    //_displayButton(user),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                user.name,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 5.0),
-              Divider(),
-            ],
-          ),
-        ),
-      ],
-    );
-  } */
-
-  // _buildToggleButtons() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //     children: <Widget>[
-  //       IconButton(
-  //         icon: Icon(Icons.grid_on),
-  //         iconSize: 30.0,
-  //         color: _displayPosts == 0
-  //             ? Theme.of(context).primaryColor
-  //             : Colors.grey[300],
-  //         onPressed: () => setState(() {
-  //           _displayPosts = 0;
-  //         }),
-  //       ),
-  //       IconButton(
-  //         icon: Icon(Icons.list),
-  //         iconSize: 30.0,
-  //         color: _displayPosts == 1
-  //             ? Theme.of(context).primaryColor
-  //             : Colors.grey[300],
-  //         onPressed: () => setState(() {
-  //           _displayPosts = 1;
-  //         }),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  /* _buildTilePost(Post post) {
-    return GridTile(
-      child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CommentsScreen(
-              postId: post.id,
-              likeCount: post.likeCount,
-            ),
-          ),
-        ),
-        child: Image(
-          image: CachedNetworkImageProvider(post.imageUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  } */
-
-  /* _buildDisplayPosts() {
-    if (_displayPosts == 0) {
-      // Grid
-      List<GridTile> tiles = [];
-      _posts.forEach(
-        (post) => tiles.add(_buildTilePost(post)),
-      );
-      return GridView.count(
-        crossAxisCount: 3,
-        childAspectRatio: 1.0,
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        children: tiles,
-      );
-    } else {
-      // Column
-      List<PostView> postViews = [];
-      _posts.forEach((post) {
-        postViews.add(
-          PostView(
-            currentUserId: widget.currentUserId,
-            post: post,
-            author: _profileUser,
-          ),
-        );
-      });
-      return Column(children: postViews);
-    }
-  } */
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          '                                            IT    Social',
-          style: TextStyle(
-            fontFamily: 'Avengeance',
-            fontSize: 25.0,
-            color: Colors.red,
-          ),
+        appBar: AppBar(
+          backgroundColor: kPrimaryColor,
+          title: Text('Profile'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: _logoutApp,
+            )
+          ],
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: AuthService.logout_Author,
-          ),
-        ],
-      ),
-      body: FutureBuilder<User>(
-        future: futureUser,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0.0),
-                  child: Row(
-                    children: <Widget>[
-                      CircleAvatar(
-                        radius: 50.0,
-                        backgroundColor: Colors.grey,
-                        backgroundImage: snapshot.data.avatar.isEmpty
-                            ? AssetImage('assets/Avatar_default.jpg')
-                            : CachedNetworkImageProvider(snapshot.data.avatar),
+        body: SingleChildScrollView(
+          child: FutureBuilder<User>(
+            future: futureUser,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        'assets/Avatar_default.jpg',
                       ),
-                      Expanded(
+                      alignment: Alignment.topCenter,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 260,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          color: kWhiteColor,
+                        ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    Text(
-                                      _posts.length.toString(),
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w600,
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 48,
+                                        backgroundColor: Colors.grey,
+                                        backgroundImage:
+                                            snapshot.data.avatar.isEmpty ||
+                                                    snapshot.data.avatar == null
+                                                ? AssetImage(
+                                                    'assets/Avatar_default.jpg')
+                                                : CachedNetworkImageProvider(
+                                                    snapshot.data.avatar),
                                       ),
-                                    ),
-                                    Text(
-                                      'Posts',
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    Text(
-                                      _followerCount.toString(),
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w600,
+                                      SizedBox(
+                                        width: 20,
                                       ),
-                                    ),
-                                    Text(
-                                      'Followers',
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    Text(
-                                      _followingCount.toString(),
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w600,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            SizedBox(
+                                              height: 30,
+                                            ),
+                                            Text(
+                                              snapshot.data.name,
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                color: kBlueColor,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              snapshot.data.bio,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: kBlueColor,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            MaterialButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) {
+                                                      return EditProfileScreen();
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              color: kPrimaryColor,
+                                              minWidth: double.infinity,
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 16,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                'EDIT PROFILE',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: kWhiteColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '1',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              color: kBlueColor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
+                                          Text(
+                                            'Posts',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '1M',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              color: kBlueColor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
+                                          Text(
+                                            'Followers',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '425',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              color: kBlueColor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
+                                          Text(
+                                            'Following',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Divider(
+                                    height: 2,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    'Friends',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: kBlueColor,
                                     ),
-                                    Text(
-                                      'Following',
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            //_displayButton(user),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 28,
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: AssetImage(
+                                          'assets/Avatar_default.jpg'),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 28,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 12,
+                              ),
+                              child: Text(
+                                'Photos',
+                                style: TextStyle(
+                                  color: kBlueColor,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 28,
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.asset(
+                                        'assets/Avatar_default.jpg',
+                                        height: 200,
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.asset(
+                                        'assets/Avatar_default.jpg',
+                                        height: 200,
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.asset(
+                                        'assets/Avatar_default.jpg',
+                                        height: 200,
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 28,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        snapshot.data.name,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
-                      SizedBox(height: 5.0),
-                      Divider(),
                     ],
                   ),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              // By default, show a loading spinner.
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          // By default, show a loading spinner.
-          return CircularProgressIndicator();
-        },
-      ),
-    );
+              );
+            },
+          ),
+        ));
   }
 }

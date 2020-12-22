@@ -8,7 +8,6 @@ class RoundedPasswordField extends StatelessWidget {
     Key key,
     this.onChanged,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(

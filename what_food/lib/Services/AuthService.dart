@@ -1,50 +1,68 @@
+import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:what_food/Models/ServerModels.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:what_food/Models/UserModel.dart';
+import 'package:what_food/Screens/NavigationPage/navigation_page.dart';
+import 'package:what_food/Screens/Login/login_screen.dart';
+import 'package:what_food/Screens/Profile/profile_screen.dart';
+import 'Dio/CustomDio.dart';
 
 class AuthService {
-  static Future<String> signup_Author(phone, password, email, name) async {
+  static Future<String> signup_Dio(phone, password, email, name) async {
     String apiUrl = '$URL_SIGNUP';
-    http.Response response = await http.post(apiUrl, body: {
+    var dio = CustomDio().instance;
+
+    dio.post(apiUrl, data: {
       'phone': phone,
       'password': password,
       'email': email,
       'name': name
+    }).then((res) async {
+      Get.to(LoginScreen());
+      Get.snackbar(
+        "Thông báo",
+        "Đăng ký thành công",
+        snackPosition: SnackPosition.TOP,
+      );
+    }).catchError((err) {
+      Get.snackbar(
+        "Thông báo",
+        "Đăng ký thất bại",
+        snackPosition: SnackPosition.TOP,
+      );
     });
-    if (response.statusCode == 200) {
-      print("Result: ${response.body}");
-      print('danh ky thanh cong');
-    } else {
-      print('dang ky that bai');
-    }
   }
 
-  static Future<String> login_Author(phone, password) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String apiUrl = '$URL_LOGIN';
-    var jsonResponseToken;
-    var jsonResponseId;
-    http.Response response =
-        await http.post(apiUrl, body: {'phone': phone, 'password': password});
-    if (response.statusCode == 200) {
-      jsonResponseToken = json.decode(response.body);
-      sharedPreferences.setString("token", jsonResponseToken['token']);
-      jsonResponseId = json.decode(response.body);
-      sharedPreferences.setString("id", jsonResponseId['_id']);
-      print('danh nhap thanh cong');
-      print(jsonResponseToken);
-      print(jsonResponseId);
-      return "1";
-    } else {
-      print('dang nhap that bai');
-      return "0";
-    }
+  static Future<String> login_Dio(phone, password) {
+    var dio = CustomDio().instance;
+    String apiUrl = "$URL_LOGIN";
+    dio.post(apiUrl, data: {'phone': phone, 'password': password}).then(
+        (res) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', res.data['token']);
+      await prefs.setString('id', res.data['_id']);
+      Get.snackbar(
+        "Thông báo",
+        "Đăng nhập thành công",
+        snackPosition: SnackPosition.TOP,
+      );
+      Get.offAll(NavigationPage());
+      print(res.data['token']);
+      print(res.data['_id']);
+    }).catchError((err) {
+      Get.snackbar(
+        "Thông báo",
+        "Đăng nhập thất bại",
+        snackPosition: SnackPosition.TOP,
+      );
+    });
   }
 
-  static Future<User> profile_Author() async {
+  static Future<User> get profile_Author async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'token';
     final value = prefs.get(key) ?? 0;
@@ -53,62 +71,100 @@ class AuthService {
     http.Response response =
         await http.get(apiUrl, headers: {'Authorization': 'Bearer $value'});
     if (response.statusCode == 200) {
-      print("test git");
-      return User.fromJson(json.decode(response.body));
+      var user = User.fromJson(json.decode(response.body));
+      print('${user.email}' + '${user.name}' + '${user.bio}');
+      Get.snackbar(
+        "Thông báo",
+        "Xin chào ${user.name}",
+        snackPosition: SnackPosition.TOP,
+      );
+      return user;
     } else {
       print('Lấy Profile Về Thất Bại');
       return null;
     }
   }
 
-  static Future<User> getUserWithId(idUser) async {
-    final prefs = await SharedPreferences.getInstance();
-    final keyToken = 'token';
-    final token = prefs.get(keyToken) ?? 0;
-
-    String apiUrl = '$URL_USERWITHID$idUser';
-    http.Response response =
-        await http.get(apiUrl, headers: {'Authorization': 'Bearer $token'});
-    if (response.statusCode == 200) {
-      print("Result: ${response.body}");
-      print('Lấy User Về Thành Công');
-      return User.fromJson(json.decode(response.body));
-    } else {
-      print('Lấy User Về Thất Bại');
-      throw Exception('Lấy User Về Thất Bại');
-    }
+  static Future<User> profile_Dio() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.get('token');
+    String apiUrl = '$URL_PROFILE';
+    var dio = CustomDio().instance;
+    print("dang lay profile...");
+    dio
+        .get(apiUrl,
+            options: Options(headers: {"Authorization": "Bearer $token"}))
+        .then((res) async {
+      var user = User.fromJson(res.data);
+      print('${user.email}');
+      return user;
+    }).catchError((err) {
+      throw Exception('Lấy profile Về Thất Bại');
+    });
   }
 
-  static Future<User> upDateProfileUser(name, email, bio, avatar) async {
+  static Future<User> getUserWithId_Dio(idUser) async {
+    String apiUrl = '$URL_USERWITHID$idUser';
+    var dio = CustomDio().instance;
+
+    dio.get(apiUrl).then((res) async {
+      print('Lấy User Về Thành Công');
+      return User.fromJson(res.data);
+    }).catchError((err) {
+      throw Exception('Lấy User Về Thất Bại');
+    });
+  }
+
+  static Future<User> upDateProfileUser(name, email, bio) async {
     final prefs = await SharedPreferences.getInstance();
     final keyToken = 'token';
     final token = prefs.get(keyToken) ?? 0;
 
     String apiUrl = '$URL_UPDATEPROFILE';
-    http.Response response = await http.put(apiUrl,
-        body: {'name': name, 'email': email, 'bio': bio, 'avatar': avatar},
-        headers: {'Authorization': 'Bearer $token'});
+    http.Response response = await http.put(apiUrl, body: {
+      'name': name,
+      'email': email,
+      'bio': bio,
+    }, headers: {
+      'Authorization': 'Bearer $token'
+    });
     if (response.statusCode == 200) {
       print("Result: ${response.body}");
       print('Up Date Thành Công');
-      return null;
+      return json.decode(response.body);
     } else {
       print('Up Date Thất Bại');
       return null;
     }
   }
 
-  static Future logout_Author() async {
-    final prefs = await SharedPreferences.getInstance();
-    final keyToken = 'token';
-    final token = prefs.get(keyToken) ?? 0;
+  static Future<User> upDateProfileUser_Dio(name, email, bio) async {
+    String apiUrl = '$URL_UPDATEPROFILE';
+    var dio = CustomDio().instance;
 
+    dio.put(apiUrl, data: {
+      'name': name,
+      'email': email,
+      'bio': bio,
+    }).then((res) async {
+      Get.to(ProfileScreen());
+      Get.snackbar(
+        "Thông báo",
+        "Cập nhật thành công",
+        snackPosition: SnackPosition.TOP,
+      );
+    }).catchError((err) {
+      throw Exception('UpDate That bai');
+    });
+  }
+
+  static Future logout_Author_Dio() async {
+    var dio = CustomDio().instance;
     String apiUrl = '$URL_LOGOUT';
-    http.Response response =
-        await http.post(apiUrl, headers: {'Authorization': 'Bearer $token'});
-    if (response.statusCode == 200) {
-      print('Dang xuat thanh cong');
-    }
-    return true;
+    dio.post(apiUrl).then((res) async {
+      print("logout done");
+    }).catchError((err) {
+      throw Exception('Logout fail');
+    });
   }
 }

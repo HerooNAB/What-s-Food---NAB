@@ -1,6 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:what_food/Models/ServerModels.dart';
 import 'package:http/http.dart' as http;
+import 'Dio/CustomDio.dart';
+import 'package:get/get.dart';
+import 'package:what_food/Models/post.dart';
 
 class PostsService {
   static Future<String> create_Post(caption, urlImage) async {

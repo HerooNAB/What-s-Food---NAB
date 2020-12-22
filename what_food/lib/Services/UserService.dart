@@ -1,23 +1,17 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:what_food/Models/ServerModels.dart';
+import 'Dio/CustomDio.dart';
 
 class UserService {
-  static Future<String> updateAvatar(urlAvatar) async {
-    final prefs = await SharedPreferences.getInstance();
-    final keyToken = 'token';
-    final token = prefs.get(keyToken) ?? 0;
+  static Future<String> updateAvatar_Dio(urlAvatar) async {
     String apiUrl = "$URL_UPDATEAVATAR";
-    http.Response response = await http.post(apiUrl, body: {
-      'image': urlAvatar,
-    }, headers: {
-      'Authorization': 'Bearer $token'
-    });
-    if (response.statusCode == 200) {
-      print("Result: ${response.body}");
+    var dio = CustomDio().instance;
+
+    dio.post(apiUrl, data: {'image': urlAvatar}).then((res) async {
       print('update avatar thanh cong');
-    } else {
-      print('update avatar that bai');
-    }
+    }).catchError((err) async {
+      throw Exception('update avatar that bai');
+    });
   }
 }

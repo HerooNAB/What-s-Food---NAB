@@ -1,29 +1,40 @@
 class User {
-  String id;
+  String avatar;
+  String bio;
+  String sId;
   String email;
   String phone;
   String password;
   String name;
-  String avatar;
-  String bio;
-//Constructor
+
   User(
-      {this.id,
+      {this.avatar,
+      this.bio,
+      this.sId,
       this.email,
       this.phone,
-      this.name,
       this.password,
-      this.avatar,
-      this.bio});
-//Create Static Method
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-        id: json["_id"],
-        email: json["email"],
-        phone: json["phone"],
-        name: json["name"],
-        password: json["password"],
-        avatar: json["avatar"],
-        bio: json["bio"]);
+      this.name});
+
+  User.fromJson(Map<String, dynamic> json) {
+    avatar = json['avatar'];
+    bio = json['bio'];
+    sId = json['_id'];
+    email = json['email'];
+    phone = json['phone'];
+    password = json['password'];
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['avatar'] = this.avatar;
+    data['bio'] = this.bio;
+    data['_id'] = this.sId;
+    data['email'] = this.email;
+    data['phone'] = this.phone;
+    data['password'] = this.password;
+    data['name'] = this.name;
+    return data;
   }
 }

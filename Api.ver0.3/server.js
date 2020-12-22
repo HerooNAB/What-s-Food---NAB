@@ -6,6 +6,7 @@ const AuthRouter = require('./Routes/auth.routes.js');
 const UserRouter = require('./Routes/user.routes.js');
 const PostRouter = require('./Routes/post.routes.js');
 const UploadImageRouter = require('./Routes/image.routes.js');
+const SearchUser = require("./Routes/search.routes.js");
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,6 +23,8 @@ app.use(UserRouter);
 app.use(PostRouter);
 
 app.use(UploadImageRouter);
+
+app.use(SearchUser);
 
 app.listen(PORT, () => {
     console.log('Server is running in port:' + PORT);

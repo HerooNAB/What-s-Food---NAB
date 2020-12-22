@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:what_food/Screens/Login/login_screen.dart';
 import 'package:what_food/Screens/Signup/components/background.dart';
 import 'package:what_food/Screens/Signup/components/or_divider.dart';
@@ -11,25 +12,13 @@ import 'package:what_food/components/rounded_input_field.dart';
 import 'package:what_food/components/rounded_password_field.dart';
 
 class Body extends StatelessWidget {
-
   String _phone, _password, _email, _name;
 
   @override
   Widget build(BuildContext context) {
-
-
-  _submit () {
-    AuthService.signup_Author(_phone,_password,_email,_name);
-    Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return LoginScreen();
-                    },
-                  ),
-                );
-  }
-
+    _submit() {
+      AuthService.signup_Dio(_phone, _password, _email, _name);
+    }
 
     Size size = MediaQuery.of(context).size;
     return Background(
@@ -38,13 +27,13 @@ class Body extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "SIGNUP",
+              "SIGN UP",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: size.height * 0.03),
+            SizedBox(height: size.height * 0.02),
             SvgPicture.asset(
               "assets/icons/signup.svg",
-              height: size.height * 0.20,
+              height: size.height * 0.15,
             ),
             RoundedInputField(
               hintText: "Your Phone",
@@ -65,7 +54,7 @@ class Body extends StatelessWidget {
               text: "SIGNUP",
               press: _submit,
             ),
-            SizedBox(height: size.height * 0.03),
+            SizedBox(height: size.height * 0.005),
             AlreadyHaveAnAccountCheck(
               login: false,
               press: () {

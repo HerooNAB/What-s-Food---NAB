@@ -1,165 +1,259 @@
-// import 'dart:io';
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:what_food/Models/UserModel.dart';
-// import 'package:what_food/Services/ImageService.dart';
-// import 'package:what_food/Services/UserService.dart';
+import 'dart:io';
 
-// class EditProfileScreen extends StatefulWidget {
-//   final User user;
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:what_food/Models/UserModel.dart';
+import 'package:what_food/Services/AuthService.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:what_food/constants.dart';
+import 'package:what_food/components/rounded_button.dart';
+import 'package:what_food/Screens/Profile/profile_screen.dart';
+import 'package:what_food/components/bottom_bar.dart';
+import 'package:what_food/Screens/NavigationPage/navigation_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:what_food/Services/ImageService.dart';
 
-//   EditProfileScreen({this.user});
+class EditProfileScreen extends StatefulWidget {
+  @override
+  _EditProfileScreenState createState() => _EditProfileScreenState();
+}
 
-//   @override
-//   _EditProfileScreenState createState() => _EditProfileScreenState();
-// }
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  Future<User> futureUser;
+  String name = "";
+  String bio = "";
+  String email = "";
+  TextEditingController nameController;
+  TextEditingController emailController;
+  TextEditingController bioController;
+  File _image;
+  void initState() {
+    futureUser = AuthService.profile_Author;
+    nameController = TextEditingController();
+    emailController = TextEditingController();
+    bioController = TextEditingController();
+    super.initState();
+  }
 
-// class _EditProfileScreenState extends State<EditProfileScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//   File _profileImage;
-//   String _name = '';
-//   bool _isLoading = false;
-//   String _avatarUrl;
+  Widget build(BuildContext context) {
+    _imgFromCamera() async {
+      File image = await ImagePicker.pickImage(
+          source: ImageSource.camera, imageQuality: 50);
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _name = widget.user.name;
-//   }
+      setState(() {
+        _image = image;
+      });
+    }
 
-//   _handleImageFromGallery() async {
-//     File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-//     if (imageFile != null) {
-//       setState(() {
-//         _profileImage = imageFile;
-//       });
-//       _avatarUrl = await ImageService.uploadAvatar(imageFile);
-//     }
-//   }
+    _imgFromGallery() async {
+      File image = await ImagePicker.pickImage(
+          source: ImageSource.gallery, imageQuality: 50);
 
-//   _displayProfileImage() {
-//     // No new profile image
-//     if (_profileImage == null) {
-//       // No existing profile image
-//       if (widget.user.avatar.isEmpty) {
-//         // Display placeholder
-//         return AssetImage('assets/Avatar_default.jpg');
-//       } else {
-//         // User profile image exists
-//         return CachedNetworkImageProvider(widget.user.avatar);
-//       }
-//     } else {
-//       // New profile image
-//       return FileImage(_profileImage);
-//     }
-//   }
+      setState(() {
+        _image = image;
+      });
+    }
 
-//   _submit() async {
-//     if (_formKey.currentState.validate() && !_isLoading) {
-//       _formKey.currentState.save();
+    _updateAvatar() {
+      int res = 0;
+      setState(() {
+        print(res);
+      });
+    }
 
-//       setState(() {
-//         _isLoading = true;
-//       });
+    void _showPicker(context) {
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return SafeArea(
+              child: Container(
+                child: new Wrap(
+                  children: <Widget>[
+                    new ListTile(
+                        leading: new Icon(Icons.photo_library),
+                        title: new Text('Photo Library'),
+                        onTap: () {
+                          _imgFromGallery();
+                          Navigator.of(context).pop();
+                        }),
+                    new ListTile(
+                      leading: new Icon(Icons.photo_camera),
+                      title: new Text('Camera'),
+                      onTap: () {
+                        _imgFromCamera();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+    }
 
-//       // Update user in database
-//       String _profileImageUrl = '';
+    _submit() {
+      AuthService.upDateProfileUser(name, email, bio);
+      setState(() {
+        Navigator.of(context).pop(new MaterialPageRoute(
+          builder: (context) => new NavigationPage(),
+        ));
+      });
+    }
 
-//       if (_profileImage == null) {
-//         _profileImageUrl = widget.user.avatar;
-//       } else {
-//         _profileImageUrl = await UserService.updateAvatar(_avatarUrl);
-//       }
-
-//       // User user = User(
-//       //   id: widget.user.id,
-//       //   name: _name,
-//       //   avatar: _profileImageUrl,
-//       // );
-//       //DatabaseService.updateUser(user);
-
-//       Navigator.pop(context);
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         title: Text(
-//           '                       Edit    Profile',
-//           style: TextStyle(
-//               color: Colors.red, fontFamily: 'Avengeance', fontSize: 25),
-//         ),
-//       ),
-//       body: GestureDetector(
-//         onTap: () => FocusScope.of(context).unfocus(),
-//         child: ListView(
-//           children: <Widget>[
-//             _isLoading
-//                 ? LinearProgressIndicator(
-//                     backgroundColor: Colors.blue[200],
-//                     valueColor: AlwaysStoppedAnimation(Colors.blue),
-//                   )
-//                 : SizedBox.shrink(),
-//             Padding(
-//               padding: EdgeInsets.all(30.0),
-//               child: Form(
-//                 key: _formKey,
-//                 child: Column(
-//                   children: <Widget>[
-//                     CircleAvatar(
-//                       radius: 60.0,
-//                       backgroundColor: Colors.grey,
-//                       backgroundImage: _displayProfileImage(),
-//                     ),
-//                     FlatButton(
-//                       onPressed: _handleImageFromGallery,
-//                       child: Text(
-//                         'Đổi ảnh đại diện',
-//                         style: TextStyle(
-//                             color: Theme.of(context).accentColor,
-//                             fontSize: 16.0),
-//                       ),
-//                     ),
-//                     TextFormField(
-//                       initialValue: _name,
-//                       style: TextStyle(fontSize: 18.0),
-//                       decoration: InputDecoration(
-//                         icon: Icon(
-//                           Icons.person,
-//                           size: 30.0,
-//                         ),
-//                         labelText: 'Name',
-//                       ),
-//                       validator: (input) =>
-//                           input.trim().length < 1 ? 'Vui lòng nhập tên' : null,
-//                       onSaved: (input) => _name = input,
-//                     ),
-//                     Container(
-//                       margin: EdgeInsets.all(40.0),
-//                       height: 40.0,
-//                       width: 250.0,
-//                       child: FlatButton(
-//                         onPressed: _submit,
-//                         color: Colors.blue,
-//                         textColor: Colors.white,
-//                         child: Text(
-//                           'Lưu',
-//                           style: TextStyle(fontSize: 18.0),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kPrimaryColor,
+        title: Text('Eit Profile'),
+      ),
+      body: SingleChildScrollView(
+        child: FutureBuilder<User>(
+          future: futureUser,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Center(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 100,
+                    ),
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.grey,
+                      child: _image != null
+                          ? GestureDetector(
+                              onTap: () {
+                                _showPicker(context);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: Image.file(
+                                  _image,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(60)),
+                              width: 100,
+                              height: 100,
+                              child: IconButton(
+                                icon: Icon(Icons.camera_alt),
+                                color: Colors.grey[800],
+                                onPressed: () {
+                                  _showPicker(context);
+                                },
+                              ),
+                            ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        _updateAvatar();
+                      },
+                      child: Text(
+                        'Upload Avatar',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 0, 30, 0),
+                      child: Column(
+                        children: <Widget>[
+                          TextFormField(
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            controller: nameController
+                              ..text = snapshot.data.name,
+                            onChanged: (value) => {
+                              {name = value}
+                            },
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.person),
+                              hintText: 'Input name change',
+                              labelText: 'Name',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            controller: emailController
+                              ..text = snapshot.data.email,
+                            onChanged: (value) => email = value,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.email),
+                              hintText: 'Input email change',
+                              labelText: 'Email',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            controller: bioController..text = snapshot.data.bio,
+                            onChanged: (value) => bio = value,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.border_color),
+                              hintText: 'Input bio change',
+                              labelText: 'Bio',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    RoundedButton(
+                      text: "EDIT",
+                      press: _submit,
+                    ),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+            // By default, show a loading spinner.
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

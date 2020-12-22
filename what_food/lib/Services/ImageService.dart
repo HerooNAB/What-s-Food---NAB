@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:what_food/Models/ServerModels.dart';
 
+
 class ImageService {
   static Future<String> uploadImagePost(image) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
