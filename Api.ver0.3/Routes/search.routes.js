@@ -7,11 +7,11 @@ require('dotenv').config()
 router.get("/searchuser", async (req,res) => {
     var query = req.body.name;
     console.log(query);
-    var fountUser = await User.find({
+    User.find({
         name: {$regex: req.body.name, $options: "i"},
-    });
-    if (!fountUser) return res.status(000).send({message: "khong tim thay"});
-    res.status(200).send(fountUser);
+    }).then((users) => {res.json({users})});
+    // if (!fountUser) return res.status(000).send({message: "khong tim thay"});
+    // res.json({users})
 });
 
 router.post('/addbag', (req, res) => {
