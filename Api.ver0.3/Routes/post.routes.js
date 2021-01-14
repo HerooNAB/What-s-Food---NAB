@@ -7,6 +7,7 @@ require('dotenv').config()
 var { cloudinary } = require('../utils/cloudinary.js');
 var multer  = require('multer')
 var fs = require('fs');
+const Food = require('../models/Food.model');
 
 const storage = multer.diskStorage({})
 
@@ -134,6 +135,26 @@ router.put('/like',RequireLogin, (req, res) =>{
             res.json(result)
         }
     })
+})
+
+router.post('/createfood',RequireLogin, (req, res) => {
+    const {name, photo, ingredient, haciendo} = req.body
+    if (!name || !photo || !ingredient || !haciendo) {
+        return res.status(422).json({ error: "Hãy điền đầy đủ thông tin" })
+    }
+    const food = new Food({
+        photo,
+        name,
+        ingredient,
+        haciendo,
+        postedBy: req.user
+    })
+    food.save().then(result => {
+            res.json({ food: result })
+        })
+        .catch(err => {
+            console.log(err)
+        })
 })
 
 module.exports = router;

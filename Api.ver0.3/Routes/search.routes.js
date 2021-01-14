@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User.model');
-const Bag = require('../models/Bag.model.js');
+const Bag = require('../models/Food.model.js');
 require('dotenv').config()
 
-router.get("/searchuser", async (req,res) => {
+router.post("/searchuser", async (req,res) => {
     var query = req.body.name;
     console.log(query);
     User.find({
@@ -12,33 +12,6 @@ router.get("/searchuser", async (req,res) => {
     }).then((users) => {res.json({users})});
     // if (!fountUser) return res.status(000).send({message: "khong tim thay"});
     // res.json({users})
-});
-
-router.post('/addbag', (req, res) => {
-    const {name, item} = req.body
-    if (!name || !item) {
-        return res.status(422).json({ error: "Hãy điền đầy đủ thông tin" })
-    }
-    const bag = new Bag({
-        name,
-        item
-    })
-    bag.save().then(result => {
-            res.json({ Bag: result })
-        })
-        .catch(err => {
-            console.log(err)
-        })
-})
-
-router.get("/searchbag", async (req,res) => {
-    const query = "^" + req.query.item + "$";
-    console.log(query.toString());
-    const fountItem = await Bag.find({
-        item: {$regex: req.query.item , $options: "i"},
-    });
-    if (!fountItem) return res.status(000).send({message: "khong tim thay"});
-    res.status(200).send(fountItem);
 });
 
 module.exports = router;
